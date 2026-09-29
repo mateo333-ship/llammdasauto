@@ -13,6 +13,11 @@ export function loadBusiness() {
 export const env = {
   port: Number(process.env.PORT || 5050),
   publicUrl: (process.env.PUBLIC_URL || '').replace(/\/$/, ''),
+  provider: (process.env.VOICE_PROVIDER || 'gemini').toLowerCase(), // 'gemini' | 'openai'
+  geminiKey: process.env.GEMINI_API_KEY || '',
+  geminiModel: process.env.GEMINI_MODEL || 'gemini-3.8-live',
+  geminiVoice: process.env.GEMINI_VOICE || 'Kore',
+  geminiUrl: process.env.GEMINI_LIVE_URL || 'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent',
   openaiKey: process.env.OPENAI_API_KEY || '',
   model: process.env.OPENAI_REALTIME_MODEL || 'gpt-realtime-2',
   realtimeUrl: process.env.OPENAI_REALTIME_URL || 'wss://api.openai.com/v1/realtime',

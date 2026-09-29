@@ -10,6 +10,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'asistente-'));
 process.env.DATA_DIR = dataDir;
 process.env.OPENAI_API_KEY = 'test';
+process.env.VOICE_PROVIDER = 'openai';
 process.env.TWILIO_AUTH_TOKEN = 'secreto';
 process.env.STREAM_SECRET = 'secreto';
 process.env.VALIDATE_TWILIO = 'false';

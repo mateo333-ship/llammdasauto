@@ -6,6 +6,7 @@ import { env, loadBusiness } from './config.js';
 import { buildInstructions } from './prompt.js';
 import { toolDefinitions, runTool } from './tools.js';
 import * as store from './store.js';
+import { handleGeminiCall } from './bridge-gemini.js';
 import { connectTwiML, streamToken, validStreamToken, validTwilioSignature, hangupCall, transferCall } from './twilio.js';
 
 const cfg = loadBusiness();
@@ -76,6 +77,8 @@ server.on('upgrade', (req, socket, head) => {
 });
 
 wss.on('connection', (twilioWs) => {
+  if (env.provider === 'gemini') return handleGeminiCall(twilioWs, cfg);
+
   let streamSid = null;
   let callSid = null;
   let callerPhone = '';
@@ -261,6 +264,8 @@ wss.on('connection', (twilioWs) => {
 export { server };
 
 if (process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).href) {
-  if (!env.openaiKey) console.warn('⚠️  Falta OPENAI_API_KEY');
+  if (env.provider === 'gemini' && !env.geminiKey) console.warn('⚠️  Falta GEMINI_API_KEY');
+  if (env.provider === 'openai' && !env.openaiKey) console.warn('⚠️  Falta OPENAI_API_KEY');
+  console.log(`Proveedor de voz: ${env.provider}`);
   server.listen(env.port, () => console.log(`Asistente de "${cfg.name}" escuchando en el puerto ${env.port}`));
 }

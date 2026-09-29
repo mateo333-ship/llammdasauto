@@ -2,11 +2,11 @@
 
 Contesta llamadas en español, atiende dudas (horarios, carta, alérgenos), **reserva y cancela mesas**, pasa la llamada a una persona cuando hace falta y guarda cada llamada con su transcripción. Incluye un panel para el dueño en `/admin`.
 
-**Cómo funciona:** Twilio recibe la llamada y envía el audio a este servidor; el servidor lo conecta con OpenAI Realtime (voz a voz) y ejecuta las acciones (comprobar disponibilidad, crear reserva…).
+**Cómo funciona:** Twilio recibe la llamada y envía el audio a este servidor; el servidor lo convierte y lo conecta con la IA de voz en tiempo real (**Gemini** por defecto, u **OpenAI** cambiando `VOICE_PROVIDER`) y ejecuta las acciones (comprobar disponibilidad, crear reserva…).
 
 ## Qué necesitas (cuentas)
 
-1. **OpenAI** con crédito: https://platform.openai.com → API keys.
+1. **Google Gemini** (clave gratuita): https://aistudio.google.com/apikey → *Create API key*. Alternativa: OpenAI con crédito (`VOICE_PROVIDER=openai`).
 2. **Twilio**: https://www.twilio.com → compra un número (para España pueden pedir verificación de identidad/dirección; empieza con la cuenta de prueba).
 3. **Un hosting** con Node 20+: Railway o Render (plan pequeño) sirven.
 
@@ -14,7 +14,7 @@ Contesta llamadas en español, atiende dudas (horarios, carta, alérgenos), **re
 
 ```bash
 npm install
-cp .env.example .env      # rellena OPENAI_API_KEY y las de Twilio
+cp .env.example .env      # rellena GEMINI_API_KEY y las de Twilio
 npm test                  # comprueba que la lógica funciona
 node --env-file=.env src/server.js
 ```
@@ -44,7 +44,8 @@ Para negocios que no sean restaurantes (clínica, peluquería…) hay que ajusta
 
 - `MAX_CALL_SECONDS` corta las llamadas largas.
 - `TRANSCRIBE=false` quita la transcripción.
-- `OPENAI_REALTIME_MODEL`: prueba modelos más baratos de la familia realtime y compara la calidad en español con llamadas reales.
+- `GEMINI_MODEL`: el modelo por defecto es `gemini-3.8-live`. Compara con otras variantes Live que ofrezca Google en coste y calidad en español.
+- El nivel gratuito de Gemini tiene límites de uso y, en el plan gratuito, Google puede usar los datos para mejorar sus productos: para clientes reales con datos personales, pasa al plan de pago y revisa sus condiciones.
 - Los mensajes cortos y directos del prompt ahorran minutos.
 - Revisa los precios actuales en las páginas de OpenAI y Twilio antes de fijar tu cuota mensual al cliente.
 
@@ -70,6 +71,8 @@ src/tools.js             acciones: disponibilidad, reservar, buscar, cancelar, t
 src/availability.js      horarios, aforo y alternativas
 src/store.js             guardado en archivo JSON
 src/twilio.js            firma, token de stream, colgar/transferir
+src/bridge-gemini.js     puente Twilio <-> Gemini Live
+src/audio.js             conversión de audio μ-law 8 kHz <-> PCM 16/24 kHz
 test/                    pruebas (npm test)
 ```
 
@@ -77,4 +80,4 @@ test/                    pruebas (npm test)
 
 - El almacenamiento en archivo JSON vale para un restaurante; para muchos clientes o varios servidores, cambia `store.js` por una base de datos.
 - No se ha probado con una llamada real a Twilio/OpenAI desde aquí (necesita tus claves); las pruebas incluidas simulan ambos lados. La primera llamada real puede requerir ajustes de voz, silencios o nombre del modelo.
-- Los nombres de modelo y de voz cambian con el tiempo: si OpenAI devuelve error de modelo, ajusta `OPENAI_REALTIME_MODEL`.
+- Los nombres de modelo y de voz cambian con el tiempo: si Gemini devuelve error de modelo o de voz, ajusta `GEMINI_MODEL` o `GEMINI_VOICE`.
