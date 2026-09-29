@@ -1,0 +1,17 @@
+{
+  "name": "asistente-llamadas",
+  "version": "1.0.0",
+  "description": "Asistente telefónico con IA para restaurantes (Twilio + OpenAI Realtime)",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "express": "^4.21.0",
+    "ws": "^8.18.0"
+  }
+}
